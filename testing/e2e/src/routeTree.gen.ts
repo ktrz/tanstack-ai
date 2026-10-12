@@ -127,6 +127,7 @@ import { Route as ApiOpenrouterCostRouteImport } from './routes/api.openrouter-c
 import { Route as ApiOpenrouterJsonObjectWireRouteImport } from './routes/api.openrouter-json-object-wire'
 import { Route as ApiOpenrouterReasoningWireRouteImport } from './routes/api.openrouter-reasoning-wire'
 import { Route as ApiOpenrouterRetryCodesRouteImport } from './routes/api.openrouter-retry-codes'
+import { Route as ApiOpenrouterSignInRouteImport } from './routes/api.openrouter-sign-in'
 import { Route as ApiOpenrouterStreamOptionsWireRouteImport } from './routes/api.openrouter-stream-options-wire'
 import { Route as ApiOpenrouterStrictToolOptionalsRouteImport } from './routes/api.openrouter-strict-tool-optionals'
 import { Route as ApiOpenrouterStructuredUsageRouteImport } from './routes/api.openrouter-structured-usage'
@@ -784,6 +785,11 @@ const ApiOpenrouterRetryCodesRoute = ApiOpenrouterRetryCodesRouteImport.update({
   path: '/api/openrouter-retry-codes',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiOpenrouterSignInRoute = ApiOpenrouterSignInRouteImport.update({
+  id: '/api/openrouter-sign-in',
+  path: '/api/openrouter-sign-in',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiOpenrouterStreamOptionsWireRoute =
   ApiOpenrouterStreamOptionsWireRouteImport.update({
     id: '/api/openrouter-stream-options-wire',
@@ -1108,6 +1114,7 @@ export interface FileRoutesByFullPath {
   '/api/openrouter-json-object-wire': typeof ApiOpenrouterJsonObjectWireRoute
   '/api/openrouter-reasoning-wire': typeof ApiOpenrouterReasoningWireRoute
   '/api/openrouter-retry-codes': typeof ApiOpenrouterRetryCodesRoute
+  '/api/openrouter-sign-in': typeof ApiOpenrouterSignInRoute
   '/api/openrouter-stream-options-wire': typeof ApiOpenrouterStreamOptionsWireRoute
   '/api/openrouter-strict-tool-optionals': typeof ApiOpenrouterStrictToolOptionalsRoute
   '/api/openrouter-structured-usage': typeof ApiOpenrouterStructuredUsageRoute
@@ -1267,6 +1274,7 @@ export interface FileRoutesByTo {
   '/api/openrouter-json-object-wire': typeof ApiOpenrouterJsonObjectWireRoute
   '/api/openrouter-reasoning-wire': typeof ApiOpenrouterReasoningWireRoute
   '/api/openrouter-retry-codes': typeof ApiOpenrouterRetryCodesRoute
+  '/api/openrouter-sign-in': typeof ApiOpenrouterSignInRoute
   '/api/openrouter-stream-options-wire': typeof ApiOpenrouterStreamOptionsWireRoute
   '/api/openrouter-strict-tool-optionals': typeof ApiOpenrouterStrictToolOptionalsRoute
   '/api/openrouter-structured-usage': typeof ApiOpenrouterStructuredUsageRoute
@@ -1427,6 +1435,7 @@ export interface FileRoutesById {
   '/api/openrouter-json-object-wire': typeof ApiOpenrouterJsonObjectWireRoute
   '/api/openrouter-reasoning-wire': typeof ApiOpenrouterReasoningWireRoute
   '/api/openrouter-retry-codes': typeof ApiOpenrouterRetryCodesRoute
+  '/api/openrouter-sign-in': typeof ApiOpenrouterSignInRoute
   '/api/openrouter-stream-options-wire': typeof ApiOpenrouterStreamOptionsWireRoute
   '/api/openrouter-strict-tool-optionals': typeof ApiOpenrouterStrictToolOptionalsRoute
   '/api/openrouter-structured-usage': typeof ApiOpenrouterStructuredUsageRoute
@@ -1588,6 +1597,7 @@ export interface FileRouteTypes {
     | '/api/openrouter-json-object-wire'
     | '/api/openrouter-reasoning-wire'
     | '/api/openrouter-retry-codes'
+    | '/api/openrouter-sign-in'
     | '/api/openrouter-stream-options-wire'
     | '/api/openrouter-strict-tool-optionals'
     | '/api/openrouter-structured-usage'
@@ -1747,6 +1757,7 @@ export interface FileRouteTypes {
     | '/api/openrouter-json-object-wire'
     | '/api/openrouter-reasoning-wire'
     | '/api/openrouter-retry-codes'
+    | '/api/openrouter-sign-in'
     | '/api/openrouter-stream-options-wire'
     | '/api/openrouter-strict-tool-optionals'
     | '/api/openrouter-structured-usage'
@@ -1906,6 +1917,7 @@ export interface FileRouteTypes {
     | '/api/openrouter-json-object-wire'
     | '/api/openrouter-reasoning-wire'
     | '/api/openrouter-retry-codes'
+    | '/api/openrouter-sign-in'
     | '/api/openrouter-stream-options-wire'
     | '/api/openrouter-strict-tool-optionals'
     | '/api/openrouter-structured-usage'
@@ -2066,6 +2078,7 @@ export interface RootRouteChildren {
   ApiOpenrouterJsonObjectWireRoute: typeof ApiOpenrouterJsonObjectWireRoute
   ApiOpenrouterReasoningWireRoute: typeof ApiOpenrouterReasoningWireRoute
   ApiOpenrouterRetryCodesRoute: typeof ApiOpenrouterRetryCodesRoute
+  ApiOpenrouterSignInRoute: typeof ApiOpenrouterSignInRoute
   ApiOpenrouterStreamOptionsWireRoute: typeof ApiOpenrouterStreamOptionsWireRoute
   ApiOpenrouterStrictToolOptionalsRoute: typeof ApiOpenrouterStrictToolOptionalsRoute
   ApiOpenrouterStructuredUsageRoute: typeof ApiOpenrouterStructuredUsageRoute
@@ -2931,6 +2944,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiOpenrouterRetryCodesRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/openrouter-sign-in': {
+      id: '/api/openrouter-sign-in'
+      path: '/api/openrouter-sign-in'
+      fullPath: '/api/openrouter-sign-in'
+      preLoaderRoute: typeof ApiOpenrouterSignInRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/openrouter-stream-options-wire': {
       id: '/api/openrouter-stream-options-wire'
       path: '/api/openrouter-stream-options-wire'
@@ -3387,6 +3407,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiOpenrouterJsonObjectWireRoute: ApiOpenrouterJsonObjectWireRoute,
   ApiOpenrouterReasoningWireRoute: ApiOpenrouterReasoningWireRoute,
   ApiOpenrouterRetryCodesRoute: ApiOpenrouterRetryCodesRoute,
+  ApiOpenrouterSignInRoute: ApiOpenrouterSignInRoute,
   ApiOpenrouterStreamOptionsWireRoute: ApiOpenrouterStreamOptionsWireRoute,
   ApiOpenrouterStrictToolOptionalsRoute: ApiOpenrouterStrictToolOptionalsRoute,
   ApiOpenrouterStructuredUsageRoute: ApiOpenrouterStructuredUsageRoute,
