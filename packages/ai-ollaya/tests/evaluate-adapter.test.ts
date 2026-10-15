@@ -133,6 +133,15 @@ describe('OllayaEvaluateAdapter', () => {
     })
   })
 
+  it('returns the parsed response body on raw', async () => {
+    fetchMock.mockResolvedValue(ollayaResponse(successBody))
+
+    const result =
+      await ollayaDecider('laya:latest').evaluate(evaluateOptions())
+
+    expect(result.raw).toEqual(successBody)
+  })
+
   it('treats a blank baseURL as the default host', async () => {
     for (const baseURL of ['', '   ']) {
       fetchMock.mockResolvedValue(ollayaResponse(successBody))

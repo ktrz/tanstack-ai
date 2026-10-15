@@ -57,6 +57,7 @@ export class CloudflareEvaluateAdapter<
           completionTokens: outputTokens,
           totalTokens: inputTokens + outputTokens,
         }),
+        raw: output,
       }
     } catch (error: unknown) {
       logger.errors(`${this.name}.evaluate fatal`, {

@@ -73,15 +73,13 @@ function evaluate(adapter: ReturnType<typeof createRestDecider>) {
 
 describe('evaluate adapter', () => {
   it('maps TypeSafe answers and usage from a REST 200 and forwards gateway headers', async () => {
+    const output = {
+      model: 'jev-1.13.0',
+      answers,
+      usage: { input_tokens: 12, output_tokens: 4 },
+    }
     const fetchMock = vi.fn<typeof fetch>(async () =>
-      Response.json({
-        success: true,
-        result: {
-          model: 'jev-1.13.0',
-          answers,
-          usage: { input_tokens: 12, output_tokens: 4 },
-        },
-      }),
+      Response.json({ success: true, result: output }),
     )
     const adapter = createRestDecider(fetchMock, {
       id: 'g1',
@@ -116,6 +114,7 @@ describe('evaluate adapter', () => {
         completionTokens: 4,
         totalTokens: 16,
       },
+      raw: output,
     })
 
     expect(fetchMock).toHaveBeenCalledTimes(1)

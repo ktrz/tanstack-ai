@@ -323,6 +323,7 @@ export class VercelGatewayEvaluateAdapter<
           confidenceMap(json.providerMetadata),
         ),
         usage: toTokenUsage(json.usage),
+        raw: json,
       }
       return result
     } catch (error: unknown) {

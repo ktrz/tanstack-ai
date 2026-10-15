@@ -208,6 +208,19 @@ describe('OpenRouterEvaluateAdapter', () => {
     expect(result.meta.provider).toBe('TypeSafe')
   })
 
+  it('puts the parsed response body on meta.raw with includeRaw', async () => {
+    fetchMock.mockResolvedValue(jsonResponse(wireBody()))
+
+    const result = await decide({
+      adapter: adapter(),
+      state,
+      questions,
+      includeRaw: true,
+    })
+
+    expect(result.meta.raw).toEqual(wireBody())
+  })
+
   it('maps usage.cost into meta.usage (#1456)', async () => {
     fetchMock.mockResolvedValue(
       jsonResponse({

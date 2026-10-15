@@ -159,6 +159,7 @@ export class OpenAIEvaluateAdapter<
           completionTokens: decision.usage.output_tokens,
           totalTokens: decision.usage.total_tokens,
         }),
+        raw: decision,
       }
     } catch (error) {
       // toRunErrorPayload keeps request headers (and the API key) out of logs.

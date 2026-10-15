@@ -169,6 +169,7 @@ export class OpenRouterEvaluateAdapter<
         usage: mapUsage(json.usage),
         ...(typeof json.id === 'string' && { id: json.id }),
         ...(typeof json.provider === 'string' && { provider: json.provider }),
+        raw: json,
       }
     } catch (error) {
       logger.errors(`${this.name}.evaluate fatal`, {

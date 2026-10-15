@@ -137,6 +137,14 @@ describe('TypesafeEvaluateAdapter', () => {
     })
   })
 
+  it('returns the parsed response body on raw', async () => {
+    fetchMock.mockResolvedValue(typesafeResponse(successBody))
+
+    const result = await adapter().evaluate(evaluateOptions())
+
+    expect(result.raw).toEqual(successBody)
+  })
+
   it('throws on 401', async () => {
     await expectStatus(401, 'Unauthorized', 'invalid api key')
   })

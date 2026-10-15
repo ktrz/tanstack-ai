@@ -125,6 +125,7 @@ export class TypesafeEvaluateAdapter<
       model: json.model,
       answers: json.answers,
       usage,
+      raw: json,
     }
   }
 }

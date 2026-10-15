@@ -144,7 +144,21 @@ it('POSTs to /v4/ai/evaluation-model and maps boolean/choice/score answers', asy
       },
     },
     usage: { promptTokens: 12, completionTokens: 4, totalTokens: 16 },
+    raw: expect.any(Object),
   })
+})
+
+it('returns the parsed response body on raw', async () => {
+  const body = {
+    answers: { refund: { type: 'boolean', probability: 0.81 } },
+    usage: { inputTokens: 12, outputTokens: 4 },
+  }
+  fetchMock.mockResolvedValue(jsonResponse(body))
+
+  const adapter = createVercelGatewayDecider('typesafe-ai/jev', 'gw_test_key')
+  const result = await adapter.evaluate(evaluateOptions())
+
+  expect(result.raw).toEqual(body)
 })
 
 it('throws when the evaluate request is not OK', async () => {

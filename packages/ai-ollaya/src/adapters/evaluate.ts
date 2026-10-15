@@ -124,6 +124,7 @@ export class OllayaEvaluateAdapter<
       model: json.model,
       answers: json.answers,
       usage,
+      raw: json,
     }
   }
 }

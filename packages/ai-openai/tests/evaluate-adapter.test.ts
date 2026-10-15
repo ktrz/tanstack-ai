@@ -185,6 +185,12 @@ describe('OpenAI evaluate adapter', () => {
     })
   })
 
+  it('returns the Decision object on raw', async () => {
+    const { adapter } = setup()
+    const result = await run(adapter)
+    expect(result.raw).toBe(allAnswers)
+  })
+
   it('keeps an answer for a question named __proto__ as an own key', async () => {
     const { adapter } = setup(
       decision([{ type: 'predicate', name: '__proto__', probability: 0.5 }]),
