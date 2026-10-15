@@ -135,6 +135,11 @@ export interface EvaluateAdapterResult {
   id?: string
   /** Upstream provider that served the request, when a router reports it. */
   provider?: string
+  /**
+   * The provider response as the adapter received it, before mapping. Not a
+   * stable shape. `decide()` copies it to `meta.raw` only with `includeRaw`.
+   */
+  raw?: unknown
 }
 
 /**

@@ -129,6 +129,8 @@ export {
   type EvaluateActivityOptions,
   type EvaluateResult,
   type EvaluateResultMeta,
+  type EvaluateRawResultMeta,
+  type EvaluateMetaFor,
   type EvaluateProviderOptions,
   type ChoiceAnswer,
   type ScoreAnswer,

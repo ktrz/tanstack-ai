@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest'
+import { describe, expect, expectTypeOf, it } from 'vitest'
 import { aiEventClient } from '@tanstack/ai-event-client'
 import { boolean, choice, decide, score } from '../src/index'
 import type { EvaluateAdapter } from '../src/activities/evaluate/adapter'
@@ -15,6 +15,10 @@ import type {
   GenerationMiddlewareContext,
   GenerationUsageInfo,
 } from '../src/activities/middleware'
+import type {
+  EvaluateRawResultMeta,
+  EvaluateResultMeta,
+} from '../src/activities/evaluate/index'
 import type { TokenUsage } from '../src/types'
 
 // ============================================================================
@@ -374,6 +378,31 @@ describe('decide()', () => {
     expect(result.meta.provider).toBe('TypeSafe')
     expect('id' in plain.meta).toBe(false)
     expect('provider' in plain.meta).toBe(false)
+  })
+
+  it('puts the raw provider response on meta only with includeRaw', async () => {
+    const body = { model: 'jev-1.13.0', answers: mixedWireAnswers, extra: 1 }
+    const adapter = mockEvaluateAdapter(async () => ({
+      ...adapterResult(mixedWireAnswers),
+      raw: body,
+    }))
+
+    const withRaw = await decide({
+      adapter,
+      state: 'x',
+      questions: mixedQuestions,
+      includeRaw: true,
+    })
+    const plain = await decide({
+      adapter,
+      state: 'x',
+      questions: mixedQuestions,
+    })
+
+    expect(withRaw.meta.raw).toBe(body)
+    expect('raw' in plain.meta).toBe(false)
+    expectTypeOf(withRaw.meta).toEqualTypeOf<EvaluateRawResultMeta>()
+    expectTypeOf(plain.meta).toEqualTypeOf<EvaluateResultMeta>()
   })
 
   it('forwards a JSON array as one state, not a batch', async () => {

@@ -107,6 +107,25 @@ export interface EvaluateResultMeta {
 }
 
 /**
+ * `result.meta` of a `decide()` call made with `includeRaw: true`.
+ */
+export interface EvaluateRawResultMeta extends EvaluateResultMeta {
+  /**
+   * The provider response before mapping, for logging and debugging. Present
+   * when the adapter returns it. The shape belongs to the provider and can
+   * change without notice.
+   */
+  raw?: unknown
+}
+
+/**
+ * The `meta` type for a `decide()` call. It has `raw` only when `includeRaw`
+ * is `true`.
+ */
+export type EvaluateMetaFor<TIncludeRaw extends boolean> =
+  TIncludeRaw extends true ? EvaluateRawResultMeta : EvaluateResultMeta
+
+/**
  * Map a helper question (or wire question) to its public answer type.
  */
 export type InferEvaluateAnswer<TQuestion> = TQuestion extends {
@@ -126,14 +145,18 @@ export type InferEvaluateAnswer<TQuestion> = TQuestion extends {
 
 /**
  * Result of `decide()`. Each question key is a top-level answer.
- * `meta` holds the resolved model id and usage.
+ * `meta` holds the resolved model id and usage, plus `raw` when
+ * `TIncludeRaw` is `true`.
  */
-export type EvaluateResult<TQuestions extends Record<string, WireQuestion>> = {
+export type EvaluateResult<
+  TQuestions extends Record<string, WireQuestion>,
+  TIncludeRaw extends boolean = false,
+> = {
   [K in keyof TQuestions as K extends typeof RESERVED_QUESTION_KEY
     ? never
     : K]: InferEvaluateAnswer<TQuestions[K]>
 } & {
-  meta: EvaluateResultMeta
+  meta: EvaluateMetaFor<TIncludeRaw>
 }
 
 // ===========================
@@ -146,10 +169,12 @@ export type EvaluateResult<TQuestions extends Record<string, WireQuestion>> = {
  *
  * @template TAdapter - The evaluate adapter type
  * @template TQuestions - The questions object passed to `decide`
+ * @template TIncludeRaw - The type of `includeRaw`
  */
 export interface EvaluateActivityOptions<
   TAdapter extends EvaluateAdapter<string, EvaluateProviderOptions<TAdapter>>,
   TQuestions extends Record<string, WireQuestion>,
+  TIncludeRaw extends boolean = boolean,
 > {
   /** The evaluate adapter to use (must be created with a model) */
   adapter: TAdapter & { kind: typeof kind }
@@ -176,6 +201,11 @@ export interface EvaluateActivityOptions<
    * control and/or a custom `Logger`.
    */
   debug?: DebugOption
+  /**
+   * Copy the provider response to `result.meta.raw`. Defaults to `false`, so
+   * results do not hold the full response unless you ask for it.
+   */
+  includeRaw?: TIncludeRaw
 }
 
 // ===========================
@@ -330,9 +360,9 @@ function mapAnswers<TQuestions extends Record<string, WireQuestion>>(
   return answers
 }
 
-function withMeta<TAnswers extends object>(
+function withMeta<TAnswers extends object, TMeta extends EvaluateResultMeta>(
   answers: TAnswers,
-  meta: EvaluateResultMeta,
+  meta: TMeta,
 ) {
   return { ...answers, meta }
 }
@@ -461,6 +491,7 @@ export function boolean(options: {
  * @param options.abortSignal Cancels the in-flight request.
  * @param options.middleware Observe-only generation middleware.
  * @param options.debug Debug logging option.
+ * @param options.includeRaw Copy the provider response to `meta.raw`.
  *
  * @example Route a support ticket
  * ```ts
@@ -497,7 +528,8 @@ export function boolean(options: {
 export async function decide<
   TAdapter extends EvaluateAdapter<string, EvaluateProviderOptions<TAdapter>>,
   TQuestions extends Record<string, WireQuestion>,
->(options: EvaluateActivityOptions<TAdapter, TQuestions>) {
+  TIncludeRaw extends boolean = false,
+>(options: EvaluateActivityOptions<TAdapter, TQuestions, TIncludeRaw>) {
   const {
     adapter,
     state,
@@ -506,6 +538,7 @@ export async function decide<
     abortSignal,
     middleware,
     debug,
+    includeRaw,
   } = options
   const model = adapter.model
   const keys = assertQuestions(questions)
@@ -594,12 +627,14 @@ export async function decide<
       usage: result.usage,
     })
 
-    return withMeta(answers, {
+    const meta: EvaluateRawResultMeta = {
       model: result.model,
       usage: result.usage,
       ...(result.id !== undefined && { id: result.id }),
       ...(result.provider !== undefined && { provider: result.provider }),
-    })
+      ...(includeRaw && result.raw !== undefined && { raw: result.raw }),
+    }
+    return withMeta(answers, meta as EvaluateMetaFor<TIncludeRaw>)
   } catch (error) {
     const duration = Date.now() - startTime
     if (isAbortError(error, abortSignal)) {
