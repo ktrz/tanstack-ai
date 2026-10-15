@@ -278,6 +278,7 @@ console.log(result.meta.usage)
 | `modelOptions` | provider options              | Provider-specific options                                    |
 | `middleware`   | `Array<GenerationMiddleware>` | Observe-only lifecycle hooks (usage, finish, error, abort)   |
 | `debug`        | `DebugOption`                 | Debug logging                                                |
+| `includeRaw`   | `boolean`                     | Put the provider response on `meta.raw` (default `false`)    |
 
 ## Server Endpoint
 
@@ -405,6 +406,39 @@ console.log(result.refund.value)
 
 > **Tip:** Pass `otelMiddleware()` to emit OpenTelemetry spans for evaluate
 > calls. See [OpenTelemetry](../advanced/otel).
+
+## Log the Raw Response
+
+A wrong answer is hard to debug when you only see the mapped result.
+An audit log also needs the exact reply from the provider.
+Pass `includeRaw: true`. Then `result.meta.raw` holds the provider response before `decide()` maps it:
+
+```typescript
+import { decide, boolean } from '@tanstack/ai'
+import { typesafeDecider } from '@tanstack/ai-typesafe'
+
+const result = await decide({
+  adapter: typesafeDecider('jev-latest'),
+  state: 'Please refund the extra payment.',
+  questions: {
+    refund: boolean({
+      instructions: 'Is the customer asking for a refund?',
+    }),
+  },
+  includeRaw: true,
+})
+
+console.log(JSON.stringify(result.meta.raw))
+```
+
+`raw` is typed `unknown`. Its shape belongs to the provider and can change. Each adapter puts this value on it:
+
+- TypeSafe, Ollaya, OpenRouter, and Vercel AI Gateway: the parsed JSON body.
+- OpenAI: the `Decision` object from the OpenAI SDK.
+- Cloudflare: the Workers AI model output. Over REST, this is the `result` field.
+
+Without `includeRaw`, `meta` has no `raw` key, and the result does not keep the response.
+If you send `result` to the browser, `raw` goes with it. Log `raw` on the server, then remove it from the response.
 
 ## Environment Variables
 

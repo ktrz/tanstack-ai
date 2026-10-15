@@ -760,6 +760,7 @@ Good to know:
 - An object `state` goes to OpenAI as JSON text.
 - If OpenAI refuses to answer a question, `decide()` throws an error with the name of that question.
 - `boolean()` criteria work. The adapter adds the true and false meanings to the instructions.
+- With `includeRaw: true`, `result.meta.raw` is the `Decision` object that the OpenAI SDK returns.
 
 See the [Evaluate guide](../evaluate/evaluate) for question helpers, the result shape, abort, and middleware.
 
