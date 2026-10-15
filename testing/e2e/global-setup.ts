@@ -186,6 +186,11 @@ export default async function globalSetup() {
   // asserts `decide()` rejects and still reports that usage.
   mock.mount('/evaluate-usage-on-failure', evaluateUsageOnFailureMount())
 
+  // decide() raw provider response. aimock has no OpenAI Decisions endpoint,
+  // so this mount hand-crafts a valid `/v1/decisions` response. The companion
+  // spec asserts `meta.raw` is that body with `includeRaw` and absent without.
+  mock.mount('/evaluate-raw-response', evaluateRawResponseMount())
+
   // BytePlus. Ark (chat, Seedream image, Seedance video) serves its whole data
   // plane under /api/v3, and Seed Speech (TTS/ASR) mounts its own endpoints at
   // the same prefix on a different host — which collapses onto one prefix here
@@ -2299,6 +2304,56 @@ function evaluateUsageOnFailureMount(): Mountable {
           },
         }),
       )
+      return true
+    },
+  }
+}
+
+/**
+ * OpenAI Decisions body served by the `evaluate-raw-response` mount. The spec
+ * keeps a copy and compares `meta.raw` with it, field for field.
+ */
+const EVALUATE_RAW_RESPONSE_BODY = {
+  model: 'gpt-6-luna',
+  answers: [
+    {
+      type: 'choice',
+      name: 'queue',
+      choice: 'billing',
+      confidence: 0.9,
+      probabilities: [
+        { value: 'billing', probability: 0.8 },
+        { value: 'tech', probability: 0.2 },
+      ],
+    },
+  ],
+  usage: {
+    input_tokens: 30,
+    input_tokens_details: { cache_write_tokens: 0, cached_tokens: 0 },
+    output_tokens: 5,
+    output_tokens_details: { reasoning_tokens: 0 },
+    total_tokens: 35,
+  },
+}
+
+/**
+ * Mounts the OpenAI Decisions `/v1/decisions` response for the
+ * `evaluate-raw-response` spec.
+ */
+function evaluateRawResponseMount(): Mountable {
+  return {
+    async handleRequest(
+      req: http.IncomingMessage,
+      res: http.ServerResponse,
+      pathname: string,
+    ): Promise<boolean> {
+      if (req.method !== 'POST' || pathname !== '/v1/decisions') {
+        return false
+      }
+      await drainBody(req)
+      res.statusCode = 200
+      res.setHeader('Content-Type', 'application/json')
+      res.end(JSON.stringify(EVALUATE_RAW_RESPONSE_BODY))
       return true
     },
   }
